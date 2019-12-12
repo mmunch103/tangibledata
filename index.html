@@ -3,12 +3,24 @@
   <head>
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
-    <!--link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous"-->
+        <!-- Latest compiled and minified CSS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
     <script src="/scripts/p5.js"></script>
     <script src="/scripts/p5bots.js"></script>
-    <link href="//cdn.bootcss.com/noUiSlider/8.5.1/nouislider.min.css" rel="stylesheet">
-    <script src="//cdn.bootcss.com/noUiSlider/8.5.1/nouislider.js"></script>
+    <!--link href="//cdn.bootcss.com/noUiSlider/8.5.1/nouislider.min.css" rel="stylesheet"-->
+    <!--script src="//cdn.bootcss.com/noUiSlider/8.5.1/nouislider.js"></script-->
     <script src="sketch.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/css/bootstrap-slider.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/css/bootstrap-slider.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+      
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,7 +37,7 @@
       padding: 5px;
      }
      body {
-      padding: 0; margin: 0;
+      padding: 20px; 
       font-family: Arial;
      } 
     #dropzone {
@@ -50,83 +62,115 @@
             text-align: center;
             margin: 0;
         }
-
+        #radioDiv{
+          position: fixed;
+          top: 60px;
+          left: 350px;
+        }
+        #tableHere {
+          width:250px; /* or whatever width you want. */
+          max-width:250px; /* or whatever width you want. */
+          display: inline-block;
+        }
+    div.posSlider {
+      position: fixed;
+      top: 150px;
+      left: 500px;
+    }
+    div.speedSlider {
+      position: fixed;
+      top: 150px;
+      left: 800px;
+    }
+    .radio-inline {
+      padding-right:240px;
+    }
    </style>
   </head>
   <body>
-    <script type="text/javascript"charset="utf-8">
-             //d3.text("assets/mammals.csv", function(data) {
-              //    var parsedCSV = d3.csv.parseRows(data);
-
-              //     var container = d3.select("body")
-              //         .append("table")
-
-              //         .selectAll("tr")
-              //             .data(parsedCSV).enter()
-              //             .append("tr")
-
-              //         .selectAll("td")
-              //             .data(function(d) { return d; }).enter()
-              //             .append("td")
-              //             .text(function(d) { return d; });
-              // });
-
-              // var range = document.getElementById('range');
-      </script>
     <!--script src="jitter.js"></script-->
-    <div id="c1">
-      <p id ="dropzone">
-        Drag your csv file here:
-      </p>
-    </div> <br>
-    <div id="canvas1"> 
-    </div>
-    <div id="canvas2">
-    </div>
-<!--     <div id="table_div">
-      <table class="table">
-         <tbody id="user_table">
 
-         </tbody>
-      </table>
-    </div> <br> -->
+     <div id="c1">
+        <p id ="dropzone">
+          Drag your csv file here:
+        </p>
+      </div> <br>
+      <div id="tableHere" class="col-xs">
+        <table id="table_id" class="display">
+          <thead id ="thead_id">
+            <tr id="tr_id">
+                <!--th>Name</th-->
+            </tr>
+        </thead>
+        <tbody id="tbody_id">
+
+
+        </table>
+        </div> <br>
+
+       <div class="posSlider">
+        <input id="posSlider" type="text" data-slider-min="0" data-slider-max="180" data-slider-step="1" data-slider-value="[1,179]"data-slider-orientation="vertical" style="display:inline-grid;"/>
+        </div>
+         <div class="speedSlider">
+        <input id="speedSlider" type="text" data-slider-min="200" data-slider-max="5000" data-slider-step="100" data-slider-value="[200,5000]"data-slider-orientation="vertical" style="display:inline-grid;"/>
+        </div>
+
+    </div>
+    
+
+    
+    <div id="radioDiv">
+      <label id="positionRadio" class="radio-inline">
+      <input type="radio" name="radio-test" value="1" checked>POSITION</label>
+      <label id="speedRadio" class="radio-inline">
+      <input type="radio" name="radio-test" value="2">SPEED</label>
+    </div>
+        
+
+      <!-- Latest compiled and minified JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/bootstrap-slider.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/bootstrap-slider.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <!--script type="text/javascript"charset="utf-8">
+         var x = 'assets/mammals.csv';    
+             d3.text(x, function(data) {
+                  var parsedCSV = d3.csv.parseRows(data);
+
+                   var container = d3.select("body")
+                       .append("table")
+
+                       .selectAll("tr")
+                           .data(parsedCSV).enter()
+                           .append("tr")
+
+                       .selectAll("td")
+                           .data(function(d) { return d; }).enter()
+                           .append("td")
+                           .text(function(d) { return d; });
+               });
+               var range = document.getElementById('range');
+      </script-->
+
+    <script>
+    $(document).ready( function () {
+        $('#table_id').DataTable();
+    } );
+      //$('input[name=radio-test]:checked').val();
+        var posslider = new Slider("#posSlider", {
+            reversed : true,
+            tooltip: 'always',
+            ticks_tooltip: true
+        });
+
+        var speedslider = new Slider("#speedSlider", {
+            reversed : true,
+            tooltip: 'always',
+            ticks_tooltip: true
+        });
+    </script>
   </body>
-  <script>
-    // var range = document.getElementById('range');
 
-    // noUiSlider.create(range, {
-    //     start: [ 20, 80 ], // Handle start position
-    //     step: 10, // Slider moves in increments of '10'
-    //     margin: 20, // Handles must be more than '20' apart
-    //     connect: true, // Display a colored bar between the handles
-    //     direction: 'rtl', // Put '0' at the bottom of the slider
-    //     orientation: 'vertical', // Orient the slider vertically
-    //     behaviour: 'tap-drag', // Move handle on tap, bar is draggable
-    //     range: { // Slider can select '0' to '100'
-    //         'min': 0,
-    //         'max': 100
-    //     },
-    //     pips: { // Show a scale with the slider
-    //         mode: 'steps',
-    //         density: 2
-    //     }
-    // });
-
-    // var valueInput = document.getElementById('value-input'),
-    //         valueSpan = document.getElementById('value-span');
-
-    // // When the slider value changes, update the input and span
-    // range.noUiSlider.on('update', function( values, handle ) {
-    //     if ( handle ) {
-    //         valueInput.value = values[handle];
-    //     } else {
-    //         valueSpan.innerHTML = values[handle];
-    //     }
-    // });
-
-    // // When the input changes, set the slider value
-    // valueInput.addEventListener('change', function(){
-    //     range.noUiSlider.set([null, this.value]);
-    // });
-  </script>
 </html>

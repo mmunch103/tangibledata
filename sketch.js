@@ -1,13 +1,23 @@
+//last version 12/12/19
 var b = p5.board('/dev/cu.usbmodem1411', 'arduino');
 let rects = []; // array of Rectangle objects]]
-let positionSliderMin, positionSliderMax,speedSliderMin, speedSliderMax;
+let tableArray = [];//array of table objects
+//let positionSliderMin, positionSliderMax,speedSliderMin, speedSliderMax;
 let buttonPos;
-let pRadio, sRadio;
 let delayInput, cycleInput;
 let sel, selSpeed; //variable dropdown
 let resetCheckbox;
 
+//data min and max labels
+var p3, p4, p7, p8;
+
+//for D3
+var filename = 'assets/mammals.csv';  
+
 var imgBack, imgGear, imgPin, imgTop;
+
+//gets html id from slider
+var fromID, fromID2, fromID3;
 
 let table;
 var servo;
@@ -15,10 +25,10 @@ var servoAngle = 0;
 
 var tableHolder;
 
-var tr;
-var th;
-var td_1;
-var td_2;
+// var tr;
+// var th;
+// var td_1;
+// var td_2;
 
 var counter = 0;
 var counterSpeed = 0;
@@ -32,6 +42,9 @@ var posSpeedToggle = 0;
 var speedIndex = 0;
 var speedAngle = 0;
 var rVar = 0;
+
+var currSimVal = 0;
+var mapSimVal = 0;
 
 //var line;
 
@@ -66,7 +79,7 @@ function preload() {
 
 function setup() {
     var c = createCanvas(400, 500);
-    c.position(600, 100);
+    c.position(1000, 20);
     imgBack = loadImage('assets/back.png');
     imgGear = loadImage('assets/gear.png');
     imgPin = loadImage('assets/stick.png');
@@ -105,130 +118,109 @@ function setup() {
       //newB.createRow(valNum);
       rects.push(newB);
     }
-    //HTML TABLE
-     for (var i = 0; i < wholeTable.length; i++) {
-         tr = createElement("tr");
-             tr.id("user_table");
-         th = createElement("th")
-             th.parent("user_table");
-             if (headerArray[i] != null) {
-               th.html(headerArray[i]);
-             }
-         td_1 = createElement("td");
-             td_1.html(wholeTable[i][0]);
-         td_2 = createElement("td");
-             td_2.html(wholeTable[i][1]);
-             //td_2.class('myclass-td');
+    //makeTable();
+     //HTML TABLE
+    //  for (var i = 0; i < wholeTable.length; i++) {
+    //       tr = createElement("tr");
+    //           tr.id("user_table");
+    //       th = createElement("th")
+    //           th.parent("user_table");
+    //           if (headerArray[i] != null) {
+    //             th.html(headerArray[i]);
+    //          }
+    //       td_1 = createElement("td");
+    //           td_1.html(wholeTable[i][0]);
+    //           td_1.parent("user_table");
+    //       td_2 = createElement("td");
+    //           td_2.html(wholeTable[i][1]);
+    //           td_2.parent("user_table");
+    //           //td_2.class('myclass-td');
+    //   }
+    var divPointer = select('#tr_id');
+    var divPointer2 = select('#tbody_id')
+     for (var i = 0; i < headerArray.length; i++) {
+          var th = createElement("th")
+          if (headerArray[i] != null) {
+              th.html(headerArray[i]);
+          }
+          th.parent(divPointer);
+        }
+    for (var i = 0; i < wholeTable.length; i++) {
+      var tr = createElement("tr");
+      tr.parent(divPointer2);
+      tr.class('#tr_tbody');
+       for (var j = 0; j < wholeTable[0].length; j++) {
+           var td_1 = createElement("td");
+           td_1.html(wholeTable[i][j]);
+           td_1.parent(tr);
+       }
      }
 
-    // var innerStr = '<table style="font-family:Arial;font-size:12px"> <tr>'
-    // for (let h = 0; h < headerArray.length; h++) {
-    //   innerStr += ''
-    // }
-    // innerStr += '</tr>'
-    // for (let y =0; y < wholeTable[0].length; y++) {
-    //   for (let x = 0; x < wholeTable.length; x++) {
-    //     innerStr += ('<th>'+ );
-
-    //   }
-    // }
-    // innerStr += '</tr><table>'
-    // tableHolder = createDiv(innerStr);
-
-
     //variable dropdown
+    var dropLabel = createP("Select column to map: ");
+    dropLabel.position(330, 20);
     sel = createSelect();
-    sel.position(200, 10);
+    sel.position(480, 20);
     for (let i = 1; i < headerArray.length; i++) {
       sel.option(headerArray[i]);
     }
     sel.changed(mySelectEvent);
 
-    selSpeed = createSelect();
-    selSpeed.position(450, 330);
-    selSpeed.option("up & down");
-    selSpeed.option("up");
-    selSpeed.option("down");
-    selSpeed.changed(selectSpeedType);
+    // selSpeed = createSelect();
+    // selSpeed.position(450, 630);
+    // selSpeed.option("up & down");
+    // selSpeed.option("up");
+    // selSpeed.option("down");
+    // selSpeed.changed(selectSpeedType);
 
     resetCheckbox = createCheckbox('Reset to 0 degrees', false);
-    resetCheckbox.position(300, 300);
+    resetCheckbox.position(360, 90);
     resetCheckbox.changed(checkReset);
 
 
     //LABELS FOR SLIDERS
-    var p3 = createP("Data min = "+ currMin);
-    p3.position(250, 240);
-    var p4 = createP("Data max = " + currMax);
-    p4.position(400, 240);
+    p3 = createP("Data min = "+ currMin);
+    p3.id('dataMinLabel');
+    p3.position(380, 200);
+    p4 = createP("Data max = " + currMax);
+    p4.id('dataMaxLabel');
+    p4.position(380, 230);
     var p5 = createP("0&#176");
-    p5.position(310, 215);
+    p5.position(500, 380);
     var p6 = createP("180&#176");
-    p6.position(300, 60);
-    var p51 = createP("0&#176");
-    p51.position(420, 215);
-    var p61 = createP("180&#176");
-    p61.position(410, 60);
-    var p7 = createP("Data min = " + currMin);
-    p7.position(250, 540);
-    var p8 = createP("Data max = " + currMax);
-    p8.position(380, 540);
+    p6.position(500, 120);
+    p7 = createP("Data min = " + currMin);
+    p7.position(680, 200);
+    p7.id('dataMinLabel2');
+    p8 = createP("Data max = " + currMax);
+    p8.position(680, 230);
+    p8.id('dataMaxLabel2');
     var p9 = createP("0.2s");
-    p9.position(310, 510);
-    var p0 = createP("5s");
-    p0.position(310, 350);
-    var p91 = createP("0.2s");
-    p91.position(410, 510);
-    var p01 = createP("5s");
-    p01.position(410, 350);
+    p9.position(805, 380);
+    var p0 = createP("5.0s");
+    p0.position(805, 120);
 
     buttonPos = createButton('Start Mapping');
-    buttonPos.position(600, 20);
+    buttonPos.position(1000, 540);
     buttonPos.mousePressed(startPos);
 
-    pRadio = createRadio();
-    pRadio.option('POSITION', 1);
-    pRadio.option('SPEED', 2);
-    pRadio.position(200, 50);
-    // sRadio = createRadio();
-    // sRadio.option('SPEED', 2);
-    // sRadio.position(200, 340);
-
-    //sliders
-
-    positionSliderMin = createSlider(0, 180, 0);
-    positionSliderMin.style('transform: rotate(' + -90 + 'deg);');
-    positionSliderMin.position(250, 150);
-    positionSliderMin.input(updateSlider);
-    positionSliderMax = createSlider(0, 180, 180);
-    positionSliderMax.style('transform: rotate(' + -90 + 'deg);');
-    positionSliderMax.position(360, 150);
-    positionSliderMax.input(updateSlider);
-    
-    speedSliderMin = createSlider(0, 300, 0);
-    speedSliderMin.style('transform: rotate(' + -90 + 'deg);');
-    speedSliderMin.position(250, 450);
-    speedSliderMin.input(updateSlider);
-    speedSliderMax = createSlider(0, 300, 300);
-    speedSliderMax.style('transform: rotate(' + -90 + 'deg);');
-    speedSliderMax.position(360, 450);
-    speedSliderMax.input(updateSlider);
-
     delayInput = createSelect();
-    delayInput.position(510, 15);
+    delayInput.position(450, 420);
     delayInput.option("0.5s", 500);
     delayInput.option("1.0s", 1000);
     delayInput.option("2.0s", 2000);
     delayInput.option("3.0s", 3000);
     delayInput.changed(changeDelay);
     var delayTitle = createP("Delay Each by:");
-    delayTitle.position(400, 0);
+    delayTitle.position(350, 420);
 
-
-    cycleInput = createCheckbox();
-    cycleInput.position(490, 45);
-    var cycleTitle = createP("Continuous:");
-    cycleTitle.position(400, 30);
+    cycleInput = createSelect();
+    cycleInput.position(400, 450);
+    cycleInput.option("Continuous", 500);
+    cycleInput.option("Once", 1000);
+    cycleInput.option("5 Times", 2000);
+    var cycleTitle = createP("Cycles:");
+    cycleTitle.position(350, 450);
 }
 
 function draw(){
@@ -243,18 +235,39 @@ function draw(){
     image(imgGear, 0,0);
     pop();
 
-    // for (let i = 0; i < rects.length; i++) {
-    //   rects[i].display();
-    // }
-    //rotate(rotateX);
-    //imageMode(CENTER);
-    //rotate(servoAngle);
     image(imgPin, 185, ry);
-    posSpeedToggleUpdate();
-    angleMin = positionSliderMin.value();
-    angleMax = positionSliderMax.value();
-    speedMin = speedSliderMin.value();
-    speedMax = speedSliderMax.value();
+
+    fromID = select('#posSlider');
+    let rangeID = fromID.value();
+    var res = rangeID.split(",");
+    angleMin = res[0];
+    angleMax = res[1];
+
+    fromID2 = select('#speedSlider');
+    let rangeID2 = fromID2.value();
+    var res2 = rangeID2.split(",");
+    speedMin = res2[0];
+    speedMax = res2[1];
+
+    //text("Current Data Value: " + currSimVal,10,470);
+    text("Mapped Data Value: " + mapSimVal,10,490);
+
+    //var radioCheck = select('#positionRadio');
+   // var radioVal = fromID3.attribute();
+    //console.log(radioVal);
+    posSpeedToggle = $('input[name=radio-test]:checked').val();
+    console.log(posSpeedToggle);
+
+    //HIGHLIGHT ON TABLE
+    // var test = selectAll('td');
+    // for (var y=0; y<test.length; y++) {
+    //     if (test[y].attribute() == ;
+    // }
+
+    // angleMin = positionSliderMin.value();
+    // angleMax = positionSliderMax.value();
+    // speedMin = speedSliderMin.value();
+    // speedMax = speedSliderMax.value();
 
 
     image(imgTop,180,115);
@@ -263,10 +276,10 @@ function draw(){
 }
 
 function updateSlider() {
-  angleMin = positionSliderMin.value();
-  angleMax = positionSliderMax.value();
-  speedMin = speedSliderMin.value();
-  speedMax = speedSliderMax.value();
+  // angleMin = positionSliderMin.value();
+  // angleMax = positionSliderMax.value();
+  // speedMin = speedSliderMin.value();
+  // speedMax = speedSliderMax.value();
   var refresh = new Array();
   rects = refresh;
  for (let i = 0; i < rowNum; i++) {
@@ -281,16 +294,6 @@ function updateSlider() {
       //newB.createRow(valNum);
       rects.push(newB);
     } 
-}
-
-
-
-function posSpeedToggleUpdate() {
-  if (pRadio.value() == 1) {
-    posSpeedToggle = 1;
-  } else if (pRadio.value() == 2) {
-    posSpeedToggle = 2;
-  }
 }
 
 //delay each function
@@ -308,7 +311,8 @@ function unhighlight() {
 
 //triggered when new file is uploaded
 function gotFile(file) {
-  createP(file.name);
+  filename = file.name;
+  console.log(filename);
   //loadTable(file, 'csv', 'header');
   table = loadTable('assets/' + file.name, 'csv', 'header', changeTable);
 }
@@ -328,6 +332,24 @@ function changeTable(table) {
       currMin = min(currMin,valNum);
       currMax = max(currMax,valNum);
     }
+
+    p3.remove();
+    p3 = createP("Data min = "+ currMin);
+    p3.id('dataMinLabel');
+    p3.position(380, 200);
+    p4.remove();
+    p4 = createP("Data max = " + currMax);
+    p4.id('dataMaxLabel');
+    p4.position(380, 230);
+    p7.remove();
+    p7 = createP("Data min = " + currMin);
+    p7.position(680, 200);
+    p7.id('dataMinLabel2');
+    p8.remove();
+    p8 = createP("Data max = " + currMax);
+    p8.position(680, 230);
+    p8.id('dataMaxLabel2');
+
     for (let i = 0; i < wholeTable.length; i++) {
       var valNum = wholeTable[i][varIndex];
       console.log(valNum);
@@ -341,26 +363,42 @@ function changeTable(table) {
       let newB = new Rectangle(xStart, yStart, valNum, sVal);
       rects.push(newB);
     }
+    //updateTable();
+    //makeTable();
     //HTML TABLE TRIAL
-     let d = select('#user_table');
-     d.remove();
-     for (var i = 0; i < wholeTable.length; i++) {
-         tr = createElement("tr");
-             tr.id("user_table");
-         th = createElement("th")
-         th.parent("user_table");
-             if (headerArray[i] != null) {
-               th.html(headerArray[i]);
-             }
-         td_1 = createElement("td");
-         td_1.html(wholeTable[i][0]);
-         td_2 = createElement("td");
-             td_2.html(wholeTable[i][1]);
-             //td_2.class('myclass-td');
+      
+      var empty1 = selectAll('td');
+      for (var x=0; x< empty1.length; x++) {
+        empty1[x].remove();
+      }
+      var empty2 = selectAll('th');
+      for (var y=0; y<empty2.length; y++) {
+        empty2[y].remove();
+      }
+      var divPointer = select('#tr_id');
+      var divPointer2 = select('#tbody_id')
+      for (var i = 0; i < headerArray.length; i++) {
+          var th = createElement("th")
+          if (headerArray[i] != null) {
+              th.html(headerArray[i]);
+          }
+          th.parent(divPointer);
+      }
+      for (var i = 0; i < wholeTable.length; i++) {
+      var tr = createElement("tr");
+      tr.parent(divPointer2);
+      tr.class('#tr_tbody');
+       for (var j = 0; j < wholeTable[0].length; j++) {
+           var td_1 = createElement("td");
+           td_1.html(wholeTable[i][j]);
+           td_1.parent(tr);
+       }
      }
+
 }
 
 function updateVariableDropdown() {
+    sel.remove();
     selNew = createSelect();
     sel = selNew;
     sel.position(300, 10);
@@ -386,6 +424,7 @@ function selectSpeedType() {
   }
 }
 
+
 function checkReset() {
   if (this.checked()) {
     console.log('Checked');
@@ -407,6 +446,7 @@ function checkReset() {
 //START MAPPING FUNCTION
 function startPos() {
     if (!interval) {
+      updateSlider();
       if (posSpeedToggle==2) {
         console.log("cycle trhough 2 hit")
         //clearInterval(interval);
@@ -430,8 +470,10 @@ function cycleThrough() {
   if (posSpeedToggle==1) {//POSITION
     if (resetToggle==0){//no reset
       var currentAngle = servoAngle;
+      //currSimVal = wholeTable[varIndex][counter];
       servo.write(servVals[counter]);
       servoAngle = this.servVals[counter];
+      mapSimVal = servoAngle;
       console.log(servVals[counter]);
       console.log(counter);
       var rectInc = map(servVals[counter], 0, 180, 75, 10);
@@ -520,7 +562,6 @@ class Rectangle {
     }
   }
 
-
   display() {
     rect(this.x, this.y, this.w, this.h);
   }
@@ -529,3 +570,22 @@ class Rectangle {
     rect(this.x, this.y, this.w, this.h);
   }
 }
+
+
+// d3.text(filename, function(data) {
+//       var parsedCSV = d3.csv.parseRows(data);
+
+//        var container = d3.select("body")
+//           .append("table")
+
+//           .selectAll("tr")
+//           .data(parsedCSV).enter()
+//           .append("tr")
+
+//           .selectAll("td")
+//           .data(function(d) { return d; }).enter()
+//           .append("td")
+//           .text(function(d) { return d; });
+//         });
+//       var range = document.getElementById('range');
+
