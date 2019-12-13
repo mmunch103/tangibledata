@@ -1,4 +1,4 @@
-//last version 12/12/19
+//last version 12/13/19
 var b = p5.board('/dev/cu.usbmodem1411', 'arduino');
 let rects = []; // array of Rectangle objects]]
 let tableArray = [];//array of table objects
@@ -16,6 +16,8 @@ var filename = 'assets/mammals.csv';
 
 var imgBack, imgGear, imgPin, imgTop;
 
+var tableRect;
+
 //gets html id from slider
 var fromID, fromID2, fromID3;
 
@@ -23,7 +25,8 @@ let table;
 var servo;
 var servoAngle = 0;
 
-var tableHolder;
+var highlightHolder;
+var highlight_td = 0;
 
 // var tr;
 // var th;
@@ -119,7 +122,7 @@ function setup() {
       rects.push(newB);
     }
     //makeTable();
-     //HTML TABLE
+     //HTML TABLEx
     //  for (var i = 0; i < wholeTable.length; i++) {
     //       tr = createElement("tr");
     //           tr.id("user_table");
@@ -136,6 +139,14 @@ function setup() {
     //           td_2.parent("user_table");
     //           //td_2.class('myclass-td');
     //   }
+
+// <tr data-min="100" datta-max="150">
+//    <td></td>
+//use .attribute('data-min', 100);
+// </tr>
+
+// 
+
     var divPointer = select('#tr_id');
     var divPointer2 = select('#tbody_id')
      for (var i = 0; i < headerArray.length; i++) {
@@ -147,14 +158,19 @@ function setup() {
         }
     for (var i = 0; i < wholeTable.length; i++) {
       var tr = createElement("tr");
+      tr.attribute('data', i);
       tr.parent(divPointer2);
-      tr.class('#tr_tbody');
+       tr.addClass('tr_tbody');
        for (var j = 0; j < wholeTable[0].length; j++) {
            var td_1 = createElement("td");
            td_1.html(wholeTable[i][j]);
+           //td_1.attribute('data', i);
            td_1.parent(tr);
        }
      }
+     highlightHolder = selectAll('.tr_tbody');
+     console.log(highlightHolder);
+   
 
     //variable dropdown
     var dropLabel = createP("Select column to map: ");
@@ -214,13 +230,13 @@ function setup() {
     var delayTitle = createP("Delay Each by:");
     delayTitle.position(350, 420);
 
-    cycleInput = createSelect();
-    cycleInput.position(400, 450);
-    cycleInput.option("Continuous", 500);
-    cycleInput.option("Once", 1000);
-    cycleInput.option("5 Times", 2000);
-    var cycleTitle = createP("Cycles:");
-    cycleTitle.position(350, 450);
+    // cycleInput = createSelect();
+    // cycleInput.position(400, 450);
+    // cycleInput.option("Continuous", 500);
+    // cycleInput.option("Once", 1000);
+    // cycleInput.option("5 Times", 2000);
+    //var cycleTitle = createP("Cycles:");
+    //cycleTitle.position(350, 450);
 }
 
 function draw(){
@@ -252,26 +268,9 @@ function draw(){
     //text("Current Data Value: " + currSimVal,10,470);
     text("Mapped Data Value: " + mapSimVal,10,490);
 
-    //var radioCheck = select('#positionRadio');
-   // var radioVal = fromID3.attribute();
-    //console.log(radioVal);
     posSpeedToggle = $('input[name=radio-test]:checked').val();
-    console.log(posSpeedToggle);
-
-    //HIGHLIGHT ON TABLE
-    // var test = selectAll('td');
-    // for (var y=0; y<test.length; y++) {
-    //     if (test[y].attribute() == ;
-    // }
-
-    // angleMin = positionSliderMin.value();
-    // angleMax = positionSliderMax.value();
-    // speedMin = speedSliderMin.value();
-    // speedMax = speedSliderMax.value();
-
 
     image(imgTop,180,115);
-
 
 }
 
@@ -296,17 +295,37 @@ function updateSlider() {
     } 
 }
 
+function highlightTable(c) {
+    if (resetToggle == 0) {
+     for (var i=0 ; i < highlightHolder.length; i++) {
+        if (i == c) {
+           highlightHolder[i].style('background-color','#C9F1F0');
+        } else {
+           highlightHolder[i].style('background-color','white');
+        }
+      }
+    } else if (resetToggle == 1) {
+        for (var i=0 ; i < highlightHolder.length; i++) {
+        if ((i * 2 == c) || (c == i*2 + 1)) {
+           highlightHolder[i].style('background-color','#C9F1F0');
+        } else {
+           highlightHolder[i].style('background-color','white');
+        }
+      }
+    }
+ }
+
 //delay each function
 function changeDelay() {
   speed = delayInput.value(); 
 }
 
 function highlight() {
-  dropzone.style('background-color', '#ccc')
+  dropzone.style('background-color', '#ccc');
 }
 
 function unhighlight() {
-  dropzone.style('background-color', '#fff')
+  dropzone.style('background-color', '#fff');
 }
 
 //triggered when new file is uploaded
@@ -350,6 +369,7 @@ function changeTable(table) {
     p8.position(680, 230);
     p8.id('dataMaxLabel2');
 
+
     for (let i = 0; i < wholeTable.length; i++) {
       var valNum = wholeTable[i][varIndex];
       console.log(valNum);
@@ -363,6 +383,15 @@ function changeTable(table) {
       let newB = new Rectangle(xStart, yStart, valNum, sVal);
       rects.push(newB);
     }
+    if (wholeTable.length < servVals.length ) {
+      //var diff = serVals.length - wholeTable.length;
+      servVals.length = wholeTable.length;
+      console.log("servVals"+servVals);
+    }
+    console.log(wholeTable);
+    console.log(varIndex);
+    console.log(servVals);
+
     //updateTable();
     //makeTable();
     //HTML TABLE TRIAL
@@ -375,6 +404,10 @@ function changeTable(table) {
       for (var y=0; y<empty2.length; y++) {
         empty2[y].remove();
       }
+      var empty3 = selectAll('.tr_tbody','#tbody_id');
+      for (var z=0; z<empty3.length; z++) {
+        empty3[z].remove();
+      }
       var divPointer = select('#tr_id');
       var divPointer2 = select('#tbody_id')
       for (var i = 0; i < headerArray.length; i++) {
@@ -386,14 +419,19 @@ function changeTable(table) {
       }
       for (var i = 0; i < wholeTable.length; i++) {
       var tr = createElement("tr");
+      tr.attribute('data', i);
       tr.parent(divPointer2);
-      tr.class('#tr_tbody');
+      tr.addClass('tr_tbody');
        for (var j = 0; j < wholeTable[0].length; j++) {
            var td_1 = createElement("td");
            td_1.html(wholeTable[i][j]);
            td_1.parent(tr);
        }
      }
+     highlightHolder.length=0;
+     console.log("empty:"+highlightHolder)
+     highlightHolder = selectAll('.tr_tbody');
+     console.log(highlightHolder);
 
 }
 
@@ -401,7 +439,7 @@ function updateVariableDropdown() {
     sel.remove();
     selNew = createSelect();
     sel = selNew;
-    sel.position(300, 10);
+    sel.position(480, 20);
     for (let i = 1; i < headerArray.length; i++) {
       sel.option(headerArray[i]);
     }
@@ -446,6 +484,7 @@ function checkReset() {
 //START MAPPING FUNCTION
 function startPos() {
     if (!interval) {
+      //counter = 0;
       updateSlider();
       if (posSpeedToggle==2) {
         console.log("cycle trhough 2 hit")
@@ -474,6 +513,7 @@ function cycleThrough() {
       servo.write(servVals[counter]);
       servoAngle = this.servVals[counter];
       mapSimVal = servoAngle;
+      highlightTable(counter);
       console.log(servVals[counter]);
       console.log(counter);
       var rectInc = map(servVals[counter], 0, 180, 75, 10);
@@ -487,6 +527,7 @@ function cycleThrough() {
       servoAngle = this.servValsReset[counter];
       console.log(servValsReset[counter]);
       console.log(counter);
+      highlightTable(counter);
       var rectInc = map(servValsReset[counter], 0, 180, 75, 10);
       rVar = -servoAngle;
       ry = rectInc;
@@ -497,8 +538,8 @@ function cycleThrough() {
          y2 = y2+20;
          y1 = y1-10;
       }
-      counter++;
-      counter = counter % servValsReset.length;
+        counter++;
+        counter = counter % servValsReset.length;
       }
       // var rectInc = map(servVals[counter], 0, 180, 200, 10);
       //   ry = rectInc;
@@ -515,6 +556,7 @@ function cycleThrough() {
 function cycleThrough2() {
   //speedIndex = 0;
   speed = speedValArray[speedIndex];
+  highlightTable(speedIndex);
   console.log(speed);
   speedIndex = (speedIndex + 1) % speedValArray.length;
   setTimeout(setSpeedAngle, speed);
