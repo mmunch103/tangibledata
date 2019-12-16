@@ -109,6 +109,8 @@ function setup() {
       currMin = min(currMin,valNum);
       currMax = max(currMax,valNum);
     }
+    currMin = currMin - 1;
+    currMax = currMax + 1;
     for (let i = 0; i < rowNum; i++) {
       var valNum = wholeTable[i][varIndex];
       var sVal = map(valNum, currMin, currMax, angleMin, angleMax);
@@ -351,6 +353,9 @@ function changeTable(table) {
       currMin = min(currMin,valNum);
       currMax = max(currMax,valNum);
     }
+    currMin = currMin - 1;
+    currMax = currMax + 1;
+
 
     p3.remove();
     p3 = createP("Data min = "+ currMin);
