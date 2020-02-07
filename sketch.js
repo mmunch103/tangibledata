@@ -178,7 +178,8 @@ function setup() {
     var dropLabel = createP("Select column to map: ");
     dropLabel.position(330, 20);
     sel = createSelect();
-    sel.position(480, 20);
+    sel.position(510, 20);
+    sel.addClass("dropdown");
     for (let i = 1; i < headerArray.length; i++) {
       sel.option(headerArray[i]);
     }
@@ -220,10 +221,12 @@ function setup() {
 
     buttonPos = createButton('Start Mapping');
     buttonPos.position(1000, 540);
+    buttonPos.addClass('buttons');
     buttonPos.mousePressed(startPos);
 
     delayInput = createSelect();
-    delayInput.position(450, 420);
+    delayInput.position(500, 420);
+    delayInput.addClass("dropdown");
     delayInput.option("0.5s", 500);
     delayInput.option("1.0s", 1000);
     delayInput.option("2.0s", 2000);
@@ -242,7 +245,7 @@ function setup() {
 }
 
 function draw(){
-    background(180, 180, 200);
+    background('#C5C4DA');
     image(imgBack, 100, 75,);
       // Create objects
     angleMode(DEGREES);
@@ -268,6 +271,7 @@ function draw(){
     speedMax = res2[1];
 
     //text("Current Data Value: " + currSimVal,10,470);
+    fill('#0f2256');
     text("Mapped Data Value: " + mapSimVal,10,490);
 
     posSpeedToggle = $('input[name=radio-test]:checked').val();
@@ -327,7 +331,7 @@ function highlight() {
 }
 
 function unhighlight() {
-  dropzone.style('background-color', '#fff');
+  dropzone.style('background-color', '#C5C4DA');
 }
 
 //triggered when new file is uploaded
